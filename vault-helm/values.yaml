@@ -1,0 +1,17 @@
+backend:
+  image: vault-backend:latest
+  replicaCount: 1
+  port: 8000
+  env:
+    MASTER_PASSWORD: "change_ceci_par_ton_password_long"
+    DATABASE_URL: "sqlite:/data/vault.db?mode=rwc"
+  volume:
+    enabled: true
+    mountPath: /home/appuser/data
+    size: 5Gi
+  namespace: vault-backend
+frontend:
+  image: vault-frontend:latest
+  replicaCount: 1
+  port: 80
+  namespace: vault-frontend

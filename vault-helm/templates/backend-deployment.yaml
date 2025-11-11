@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vault-backend
+spec:
+  replicas: {{ .Values.backend.replicaCount }}
+  selector:
+    matchLabels:
+      app: vault-backend
+  template:
+    metadata:
+      labels:
+        app: vault-backend
+    spec:
+      containers:
+        - name: vault-backend
+          image: {{ .Values.backend.image }}
+          ports:
+            - containerPort: {{ .Values.backend.port }}
+          env:
+            - name: MASTER_PASSWORD
+              value: {{ .Values.backend.env.MASTER_PASSWORD | quote }}
+            - name: DATABASE_URL
+              value: {{ .Values.backend.env.DATABASE_URL | quote }}
+          volumeMounts:
+{{- if eq .Values.backend.volume.enabled "true" }}
+  - name: data
+    mountPath: {{ .Values.backend.volume.mountPath }}
+{{- end }}
+      volumes:
+{{- if eq .Values.backend.volume.enabled "true" }}
+  - name: data
+    emptyDir: {}
+{{- end }}
