@@ -3,7 +3,7 @@ use actix_web::http::Error;
 use sqlx::SqlitePool;
 use uuid::Uuid;
 use chrono::Utc;
-use crate::models::{AddResponseGroups, AddUserGroups, CreateGroupRequest, CreateGroupResponse, DeleteGroups, ResponseGetApiKeyInGroups, ResponseGetAccountInGroups, GetAccountResponse, GetAllGroups, GetApiKeyResponse, User};
+use crate::models::{AddResponseGroups, AddUserGroups, CreateGroupRequest, CreateGroupResponse, DeleteGroups, ResponseGetApiKeyInGroups, ResponseGetAccountInGroups, GetAccountResponse, GetAllGroups, GetApiKeyResponse, ResponseGetApiKeyInTitle, User};
 use crate::crypto::CryptoService;
 pub struct GroupService;
 // Initialize database tables
@@ -611,7 +611,6 @@ pub async fn get_api_key_by_group_name(
     group_name: &str,
     crypto: &CryptoService,
 ) -> Result<Vec<ResponseGetApiKeyInGroups>, sqlx::Error> {
-    // On récupère toutes les lignes correspondant au nom du groupe
     let rows = sqlx::query_as::<_, ResponseGetApiKeyInGroups>(
         r#"
         SELECT group_name, title, api_key
@@ -638,6 +637,45 @@ pub async fn get_api_key_by_group_name(
             }
             Err(e) => {
                 log::error!("Decryption failed for API key '{}': {}", row.title, e);
+            }
+        }
+    }
+
+    Ok(api_keys)
+}
+
+pub async fn get_api_key_by_title_and_username(
+    pool: &SqlitePool,
+    title: &str,
+    username: &str,
+    crypto: &CryptoService,
+) -> Result<Vec<ResponseGetApiKeyInTitle>, sqlx::Error> {
+    let rows = sqlx::query_as::<_, ResponseGetApiKeyInTitle>(
+        r#"
+        SELECT api_key
+        FROM add_api_key
+        WHERE title = ? AND username = ?
+        "#
+    )
+    .bind(username)
+    .bind(title)
+    .fetch_all(pool)
+    .await
+    .map_err(|e| {
+        log::error!("Database query failed for get_api_key_by_group_name: {:?}", e);
+        e
+    })?;
+
+    let mut api_keys = Vec::new();
+
+    for mut row in rows {
+        match crypto.decode_and_decrypt(&row.api_key) {
+            Ok(decrypted) => {
+                row.api_key = decrypted;
+                api_keys.push(row);
+            }
+            Err(e) => {
+                log::error!("Decryption failed for API key '{}': {}", title, e);
             }
         }
     }

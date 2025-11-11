@@ -18,7 +18,7 @@ use auth::{register, login, verify_token};
 use auth_admin::{register_admin, login_admin, verify_token_admin};
 use handlers::{add_api_key, delete_api_key, add_account, delete_account, get_account,
      get_api_key, get_me, get_groups_by_name, add_api_key_in_group, add_account_in_group,
-     get_account_in_group, get_api_key_in_group
+     get_account_in_group, get_api_key_in_group, get_api_key_by_title
     };
 use middleware_mod::auth_middleware::AuthMiddleware;
 use middleware_mod::auth_middleware_admin::AuthMiddlewareAdmin;
@@ -68,7 +68,7 @@ async fn main() -> std::io::Result<()> {
     
     HttpServer::new(move || {
         let cors = Cors::default()
-            .allowed_origin("http://192.168.1.40:30080") 
+            .allowed_origin("http://IP:NodePort") 
             .allowed_methods(vec!["GET", "POST", "PUT", "DELETE", "OPTIONS"])
             .allowed_headers(vec![header::CONTENT_TYPE, header::AUTHORIZATION])
             .supports_credentials()
@@ -107,6 +107,7 @@ async fn main() -> std::io::Result<()> {
                     .route("/get/groups-by-name", web::post().to(get_groups_by_name))
                     .route("/add/account/groups", web::post().to(add_account_in_group))
                     .route("/add/api-key/groups", web::post().to(add_api_key_in_group))
+                    .route("/get/api-key-by-title", web::post().to(get_api_key_by_title))
                     .route("/get/account/groups", web::post().to(get_account_in_group))
                     .route("/get/api-key/groups", web::post().to(get_api_key_in_group))
             )

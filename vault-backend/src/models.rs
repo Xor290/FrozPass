@@ -269,3 +269,14 @@ pub struct ResponseGetApiKeyInGroups {
     pub title: String,
     pub api_key: String,
 }
+
+#[derive(Deserialize)]
+pub struct RequestGetApiKeyInTitle {
+    pub title: String,
+    pub username: String,
+}
+
+#[derive(Serialize, sqlx::FromRow)]
+pub struct ResponseGetApiKeyInTitle {
+    pub api_key: String,
+}

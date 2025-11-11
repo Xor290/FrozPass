@@ -1,8 +1,8 @@
-use actix_web::{web, HttpResponse, HttpRequest, HttpMessage};
+use actix_web::{HttpMessage, HttpRequest, HttpResponse, body, web};
 use serde::{Deserialize, Serialize};
 use sqlx::SqlitePool;
 use crate::models::{
-    Claims, ErrorResponse, AddApiKeyRequest, UsernameRequest, AccountInGroupResponse, ApiKeyInGroupResponse, RequestGetAccountInGroups,
+    Claims, ErrorResponse, AddApiKeyRequest, UsernameRequest, AccountInGroupResponse, ApiKeyInGroupResponse, RequestGetAccountInGroups, RequestGetApiKeyInTitle,
     AddAccountRequest, DeleteRequest, AccountResponse, ApiKeyResponse, MeResponse, AddApiKeyInGroup, AddAccountInGroup, RequestGetApiKeyInGroups
 };
 use crate::db;
@@ -515,7 +515,7 @@ pub async fn get_api_key_in_group(
         });
     }
     match db::get_api_key_by_group_name(pool.get_ref(), group_name, crypto.get_ref()).await {
-                Ok(accounts) if !accounts.is_empty() => {
+        Ok(accounts) if !accounts.is_empty() => {
             log::info!("Group '{}' retrieved {} account(s)", body.group_name, accounts.len());
             HttpResponse::Ok().json(accounts)
         }
@@ -532,4 +532,38 @@ pub async fn get_api_key_in_group(
             })
         }
     }
+}
+
+pub async fn get_api_key_by_title(
+    _req: HttpRequest,
+    pool: web::Data<SqlitePool>,
+    body: web::Json<RequestGetApiKeyInTitle>,
+    crypto: web::Data<CryptoService>,
+) -> HttpResponse {
+    let title = &body.title;
+    let username = &body.username;
+    if title.trim().is_empty() {
+        return HttpResponse::BadRequest().json(ErrorResponse {
+            error: "Group name cannot be empty".into(),
+        });        
+    }
+    match db::get_api_key_by_title_and_username(pool.get_ref(), title, username, crypto.get_ref()).await {
+        Ok(accounts) if !accounts.is_empty() => {
+            log::info!("Group '{}' retrieved {} account(s)", username, accounts.len());
+            HttpResponse::Ok().json(accounts)
+        }
+        Ok(_) => {
+            log::warn!("No accounts found for group: {}", username);
+            HttpResponse::NotFound().json(ErrorResponse {
+                error: "No accounts found for this group".into(),
+            })
+        }
+        Err(e) => {
+            log::error!("Failed to retrieve accounts for group '{}': {}", title, e);
+            HttpResponse::InternalServerError().json(ErrorResponse {
+                error: "Failed to retrieve accounts".into(),
+            })
+        }
+    }
+
 }
