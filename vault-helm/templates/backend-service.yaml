@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: vault-backend
-  namespace: {{ .Values.backend.namespace }}
+  namespace: {{ .Values.nginx.namespace }}
 spec:
   selector:
     app: vault-backend
