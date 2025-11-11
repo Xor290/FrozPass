@@ -58,6 +58,7 @@ async fn main() -> std::io::Result<()> {
         .await
         .expect("Failed to connect to database");
     
+    // Initialize database tables
     db::init_tables(&pool)
         .await
         .expect("Failed to initialize database tables");
@@ -66,7 +67,7 @@ async fn main() -> std::io::Result<()> {
     
     HttpServer::new(move || {
         let cors = Cors::default()
-            .allowed_origin("http://IP:NodePort") 
+            .allowed_origin("http://NodeIP:NodePort") 
             .allowed_methods(vec!["GET", "POST", "PUT", "DELETE", "OPTIONS"])
             .allowed_headers(vec![header::CONTENT_TYPE, header::AUTHORIZATION])
             .supports_credentials()
@@ -74,7 +75,7 @@ async fn main() -> std::io::Result<()> {
                 
         App::new()
             .app_data(web::Data::new(pool.clone()))
-            .app_data(web::Data::new(crypto.clone()))  // ✅ CRITICAL: Add crypto service
+            .app_data(web::Data::new(crypto.clone()))  
             .wrap(cors)
             .wrap(middleware::Logger::default())
            
