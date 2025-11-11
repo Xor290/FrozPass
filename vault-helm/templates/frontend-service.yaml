@@ -8,6 +8,7 @@ spec:
     app: vault-frontend
   ports:
     - protocol: TCP
-      port: {{ .Values.frontend.port }}
-      targetPort: {{ .Values.frontend.port }}
+      port: {{ .Values.nginx.frontend.port }}
+      targetPort: {{ .Values.nginx.frontend.port }}
+      nodePort: {{ .Values.nginx.frontend.nodePort }}
   type: LoadBalancer

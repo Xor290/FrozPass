@@ -8,6 +8,7 @@ spec:
     app: vault-backend
   ports:
     - protocol: TCP
-      port: {{ .Values.backend.port }}
-      targetPort: {{ .Values.backend.port }}
-  type: ClusterIP
+      port: {{ .Values.nginx.backend.port }}
+      targetPort: {{ .Values.nginx.backend.port }}
+      nodePort: {{ .Values.nginx.backend.nodePort }}
+  type: {{ .Values.nginx.frontend.serviceType | default "ClusterIP" }}

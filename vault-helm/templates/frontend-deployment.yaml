@@ -4,7 +4,7 @@ metadata:
   name: vault-frontend
   namespace: {{ .Values.nginx.namespace }}
 spec:
-  replicas: {{ .Values.frontend.replicaCount }}
+  replicas: {{ .Values.nginx.frontend.replicaCount }}
   selector:
     matchLabels:
       app: vault-frontend
@@ -15,6 +15,7 @@ spec:
     spec:
       containers:
         - name: vault-frontend
-          image: {{ .Values.frontend.image }}
+          image: {{ .Values.nginx.frontend.image }}
+          imagePullPolicy: Always
           ports:
-            - containerPort: {{ .Values.frontend.port }}
+            - containerPort: {{ .Values.nginx.frontend.port }}

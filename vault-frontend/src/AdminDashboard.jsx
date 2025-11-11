@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LogOut, Users, Key, Shield, Menu, X, Trash2, Search, RefreshCw, UserPlus, Edit } from 'lucide-react';
 
-const API_BASE_URL = 'http://localhost:8000/api/admin';
+const API_BASE_URL = 'http://192.168.1.40:30081/api';
 
 // ========================================
 // UTILITY COMPONENTS

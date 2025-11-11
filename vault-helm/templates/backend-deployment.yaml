@@ -4,7 +4,7 @@ metadata:
   name: vault-backend
   namespace: {{ .Values.nginx.namespace }}
 spec:
-  replicas: {{ .Values.backend.replicaCount }}
+  replicas: {{ .Values.nginx.backend.replicaCount }}
   selector:
     matchLabels:
       app: vault-backend
@@ -15,21 +15,21 @@ spec:
     spec:
       containers:
         - name: vault-backend
-          image: {{ .Values.backend.image }}
+          image: {{ .Values.nginx.backend.image }}
           ports:
-            - containerPort: {{ .Values.backend.port }}
+            - containerPort: {{ .Values.nginx.backend.port }}
           env:
             - name: MASTER_PASSWORD
-              value: {{ .Values.backend.env.MASTER_PASSWORD | quote }}
+              value: {{ .Values.nginx.backend.env.MASTER_PASSWORD | quote }}
             - name: DATABASE_URL
-              value: {{ .Values.backend.env.DATABASE_URL | quote }}
+              value: {{ .Values.nginx.backend.env.DATABASE_URL | quote }}
           volumeMounts:
-{{- if eq .Values.backend.volume.enabled "true" }}
-  - name: data
-    mountPath: {{ .Values.backend.volume.mountPath }}
+{{- if .Values.nginx.backend.volume.enabled }}
+            - name: data
+              mountPath: {{ .Values.nginx.backend.volume.mountPath }}
 {{- end }}
       volumes:
-{{- if eq .Values.backend.volume.enabled "true" }}
-  - name: data
-    emptyDir: {}
+{{- if .Values.nginx.backend.volume.enabled }}
+        - name: data
+          emptyDir: {}
 {{- end }}

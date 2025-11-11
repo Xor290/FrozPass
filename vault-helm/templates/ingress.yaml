@@ -4,27 +4,29 @@ metadata:
   name: vault-ingress
   namespace: {{ .Values.nginx.namespace }}
   annotations:
-    kubernetes.io/ingress.class: nginx
+    {{- range $key, $value := .Values.nginx.ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
 spec:
   rules:
-    - host: {{ .Values.ingress.host | quote }}
+    - host: {{ .Values.nginx.ingress.host | quote }}
       http:
         paths:
-          - path: {{ .Values.ingress.paths.frontend }}
+          - path: {{ .Values.nginx.ingress.paths.frontend }}
             pathType: Prefix
             backend:
               service:
-                name: {{ .Values.frontend.name | default "vault-frontend" }}
+                name: {{ .Values.nginx.frontend.name | default "vault-frontend" }}
                 port:
-                  number: {{ .Values.frontend.port }}
-          - path: {{ .Values.ingress.paths.backend }}
+                  number: {{ .Values.nginx.frontend.port }}
+          - path: {{ .Values.nginx.ingress.paths.backend }}
             pathType: Prefix
             backend:
               service:
-                name: {{ .Values.backend.name | default "vault-backend" }}
+                name: {{ .Values.nginx.backend.name | default "vault-backend" }}
                 port:
-                  number: {{ .Values.backend.port }}
-  {{- if eq .Values.nginx.ingress.tls.enabled "true" }}
+                  number: {{ .Values.nginx.backend.port }}
+  {{- if .Values.nginx.ingress.tls.enabled }}
   tls:
     - hosts:
         - {{ .Values.nginx.ingress.host | quote }}

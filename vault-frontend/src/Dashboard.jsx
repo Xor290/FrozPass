@@ -3,7 +3,7 @@ import { LogOut, Key, Menu, X, User, Settings, Eye, EyeOff, Copy, ExternalLink, 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faLock } from '@fortawesome/free-solid-svg-icons';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = 'http://192.168.1.40:30081/api';
 
 export default function Dashboard() {
   // ========== STATE MANAGEMENT ==========

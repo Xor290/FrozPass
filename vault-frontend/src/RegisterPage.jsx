@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Lock, User, CheckCircle, XCircle } from 'lucide-react';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = 'http://192.168.1.40:30081/api';
 
 export default function Register() {
   const [formData, setFormData] = useState({

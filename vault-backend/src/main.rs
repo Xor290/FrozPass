@@ -2,6 +2,7 @@ use actix_web::{web, App, HttpServer, middleware};
 use sqlx::sqlite::{SqlitePool, SqliteConnectOptions};
 use std::str::FromStr;
 use actix_cors::Cors;
+use actix_web::http::header;
 
 mod models;
 mod handlers;
@@ -63,14 +64,16 @@ async fn main() -> std::io::Result<()> {
         .expect("Failed to initialize database tables");
     
     log::info!("✅ Database initialized successfully");
-    println!("🚀 Starting server on http://127.0.0.1:8000");
+    println!("🚀 Starting server on http://192.168.1.40:30080");
     
     HttpServer::new(move || {
         let cors = Cors::default()
-            .allow_any_origin()
-            .allow_any_method()
-            .allow_any_header();
-        
+            .allowed_origin("http://192.168.1.40:30080") 
+            .allowed_methods(vec!["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+            .allowed_headers(vec![header::CONTENT_TYPE, header::AUTHORIZATION])
+            .supports_credentials()
+            .max_age(3600);
+                
         App::new()
             .app_data(web::Data::new(pool.clone()))
             .app_data(web::Data::new(crypto.clone()))  // ✅ CRITICAL: Add crypto service

@@ -2,9 +2,12 @@ nginx:
   namespace: frozpass
 
   backend:
-    image: vault-backend:latest
+    image: xor1234/vault-backend:latest
     replicaCount: 1
     port: 8000
+    nodePort: 30081
+    serviceType: NodePort
+    name: frozpass-backend
     env:
       MASTER_PASSWORD: "change_ceci_par_ton_password_long"
       DATABASE_URL: "sqlite:/data/vault.db?mode=rwc"
@@ -14,9 +17,13 @@ nginx:
       size: 5Gi
 
   frontend:
-    image: vault-frontend:latest
+    image: xor1234/vault-frontend:latest
     replicaCount: 1
     port: 80
+    nodePort: 30080   # Port fixe pour NodePort
+    serviceType: NodePort
+    name: frozpass-frontend
+
 
   ingress:
     enabled: true

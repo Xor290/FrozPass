@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Eye, EyeOff, Lock, User, CheckCircle, XCircle } from 'lucide-react';
 import { useNavigate } from "react-router-dom"; 
 
-const API_BASE_URL = 'http://127.0.0.1:8000/api'; 
+const API_BASE_URL = 'http://192.168.1.40:30081/api'; 
 
 export default function Login() {
   const navigate = useNavigate(); 
