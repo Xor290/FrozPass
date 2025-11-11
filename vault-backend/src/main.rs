@@ -58,13 +58,11 @@ async fn main() -> std::io::Result<()> {
         .await
         .expect("Failed to connect to database");
     
-    // Initialize database tables
     db::init_tables(&pool)
         .await
         .expect("Failed to initialize database tables");
     
     log::info!("✅ Database initialized successfully");
-    println!("🚀 Starting server on http://192.168.1.40:30080");
     
     HttpServer::new(move || {
         let cors = Cors::default()
