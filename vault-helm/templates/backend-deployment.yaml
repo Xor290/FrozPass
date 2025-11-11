@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: vault-backend
+  namespace: {{ .Values.nginx.namespace }}
 spec:
   replicas: {{ .Values.backend.replicaCount }}
   selector:

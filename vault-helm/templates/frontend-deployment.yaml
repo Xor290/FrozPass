@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: vault-frontend
-  namespace: {{ .Values.frontend.namespace }}
+  namespace: {{ .Values.nginx.namespace }}
 spec:
   replicas: {{ .Values.frontend.replicaCount }}
   selector:

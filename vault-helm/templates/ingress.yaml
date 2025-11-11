@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: vault-ingress
+  namespace: {{ .Values.nginx.namespace }}
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: {{ .Values.ingress.host | quote }}
+      http:
+        paths:
+          - path: {{ .Values.ingress.paths.frontend }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.frontend.name | default "vault-frontend" }}
+                port:
+                  number: {{ .Values.frontend.port }}
+          - path: {{ .Values.ingress.paths.backend }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.backend.name | default "vault-backend" }}
+                port:
+                  number: {{ .Values.backend.port }}
+  {{- if eq .Values.nginx.ingress.tls.enabled "true" }}
+  tls:
+    - hosts:
+        - {{ .Values.nginx.ingress.host | quote }}
+      secretName: {{ .Values.nginx.ingress.tls.secretName | quote }}
+  {{- end }}
